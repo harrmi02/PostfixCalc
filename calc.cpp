@@ -10,7 +10,7 @@
 using namespace std;
 
 Fl_Box *display;
-Stack<int > numbers;
+Stack<float > numbers;
 
 class NumButton : public Fl_Button{
 
@@ -37,6 +37,38 @@ public:
  	}
 
 };
+
+void entercb(Fl_Widget* me, void * something){
+	const char* val = display->label();
+	int num = atoi(val);
+	float fnum = (float)num;
+	numbers.push(fnum);
+	display->copy_label("");
+}
+
+void dropcb(Fl_Widget* me, void * something){
+	float temp = numbers.pop();
+}
+
+void pluscb(Fl_Widget* me, void * something){
+	const char* val = display->label();
+	int num = atoi(val);
+	float fnum = (float)num;
+	numbers.push(fnum);
+
+	float left = 0;
+	float right = 0;
+	float result = 0;
+	right = numbers.pop();
+	left = numbers.pop();
+
+	result = left + right;
+
+	numbers.push(result);
+
+	display->copy_label(to_string(result).c_str());
+
+}
 
 int main(int argc, char *argv[]){
 
@@ -83,6 +115,10 @@ int main(int argc, char *argv[]){
 	eight->callback(NumButton::numcb, 0);
 	nine->callback(NumButton::numcb, 0);
 	zero->callback(NumButton::numcb, 0);
+
+	enter->callback(entercb, 0);
+	drop->callback(dropcb, 0);
+	plus->callback(pluscb, 0);
 
 
 
