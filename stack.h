@@ -39,13 +39,19 @@ template <typename thisType> class Stack {
 			}
 		}
 
-		thisType pop(){
-			sp--;
-			if(sp < 0){
-			throw out_of_range("The stack is empty!");
-
+		thisType pop(){	
+			if(sp > 0){
+				sp--;
+				return storage[sp];
 			}
-			return storage[sp];
+		}
+
+		thisType peek(int place){
+			thisType temp = 0;
+			if(sp > 0){
+				temp = storage[sp - place];
+				return temp;
+			}
 		}
 
 		bool isEmpty(){
