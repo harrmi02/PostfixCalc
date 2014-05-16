@@ -17,6 +17,9 @@ Fl_Box *middle2;
 Fl_Box *highest;
 Stack<float > numbers;
 
+bool solved;
+bool empty;
+
 class NumButton : public Fl_Button{
 
 private: 
@@ -35,9 +38,15 @@ public:
 
  		const char* text = display->label();
 		char finalText[100];
-		strcpy(finalText, text);
-		strcat(finalText, myButton->getValue());
-		display->copy_label(finalText);
+		if(!solved){
+			strcpy(finalText, text);
+			strcat(finalText, myButton->getValue());
+			display->copy_label(finalText);
+		}else{
+			display->copy_label(myButton->getValue());
+			solved = false;
+		}
+		empty = false;
 
  	}
 
@@ -56,6 +65,7 @@ void entercb(Fl_Widget* me, void * something){
 	float fnum = (float)num;
 	numbers.push(fnum);
 	display->copy_label("");
+	empty = true;
 
 	updateBoxes();
 }
@@ -63,16 +73,18 @@ void entercb(Fl_Widget* me, void * something){
 void dropcb(Fl_Widget* me, void * something){
 	float temp = numbers.pop();
 	display->copy_label("");
+	empty = true;
 	updateBoxes();	
 }
 
 void clearcb(Fl_Widget* me, void * something){
 	display->label("");
+	empty = true;
 }
 
 void pluscb(Fl_Widget* me, void * something){
 	const char* val = display->label();
-	if(val != ""){
+	if(!empty){
 		int num = atoi(val);
 		float fnum = (float)num;
 		numbers.push(fnum);
@@ -89,11 +101,12 @@ void pluscb(Fl_Widget* me, void * something){
 	display->copy_label(to_string(result).c_str());
 
 	updateBoxes();
+	solved = true;
 }
 
 void minuscb(Fl_Widget* me, void * something){
 	const char* val = display->label();
-	if(val != ""){
+	if(!empty){
 		int num = atoi(val);
 		float fnum = (float)num;
 		numbers.push(fnum);
@@ -111,12 +124,12 @@ void minuscb(Fl_Widget* me, void * something){
 
 	display->copy_label(to_string(result).c_str());
 	updateBoxes();
-
+	solved = true;
 }
 
 void multcb(Fl_Widget* me, void * something){
 	const char* val = display->label();
-	if(val != ""){
+	if(!empty){
 		int num = atoi(val);
 		float fnum = (float)num;
 		numbers.push(fnum);
@@ -133,12 +146,13 @@ void multcb(Fl_Widget* me, void * something){
 
 	display->copy_label(to_string(result).c_str());
 	updateBoxes();
+	solved = true;
 
 }
 
 void dividecb(Fl_Widget* me, void * something){
 	const char* val = display->label();
-	if(val != ""){
+	if(!empty){
 		int num = atoi(val);
 		float fnum = (float)num;
 		numbers.push(fnum);
@@ -149,18 +163,22 @@ void dividecb(Fl_Widget* me, void * something){
 	right = numbers.pop();
 	left = numbers.pop();
 
-	result = left / right;
+	if(right != 0){
+		result = left / right;
+		numbers.push(result);
 
-	numbers.push(result);
-
-	display->copy_label(to_string(result).c_str());
-	updateBoxes();
-
+		display->copy_label(to_string(result).c_str());
+		updateBoxes();
+		solved = true;
+	}else{
+		numbers.push(left);
+		numbers.push(right);
+	}
 }
 
 void expocb(Fl_Widget* me, void * something){
 	const char* val = display->label();
-	if(val != ""){
+	if(!empty){
 		int num = atoi(val);
 		float fnum = (float)num;
 		numbers.push(fnum);
@@ -172,16 +190,19 @@ void expocb(Fl_Widget* me, void * something){
 	right = numbers.pop();
 	left = numbers.pop();
 
+	result = pow(left, right);
+
 	numbers.push(result);
 
 	display->copy_label(to_string(result).c_str());
 	updateBoxes();
+	solved = true;
 
 }
 
 void rootcb(Fl_Widget* me, void * something){
 	const char* val = display->label();
-	if(val != ""){
+	if(!empty){
 		int num = atoi(val);
 		float fnum = (float)num;
 		numbers.push(fnum);
@@ -196,12 +217,13 @@ void rootcb(Fl_Widget* me, void * something){
 
 	display->copy_label(to_string(result).c_str());
 	updateBoxes();
+	solved = true;
 
 }
 
 void negcb(Fl_Widget* me, void * something){
 	const char* val = display->label();
-	if(val != ""){
+	if(!empty){
 		int num = atoi(val);
 		float fnum = (float)num;
 		numbers.push(fnum);
@@ -217,9 +239,13 @@ void negcb(Fl_Widget* me, void * something){
 
 	display->copy_label(to_string(result).c_str());
 	updateBoxes();
+	solved = true;
 }
 
 int main(int argc, char *argv[]){
+
+	solved = false;
+	empty = false;
 
 	Fl_Window *window = new Fl_Window(200, 340);
 	window->color(FL_DARK_BLUE);
